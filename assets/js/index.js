@@ -131,43 +131,6 @@ function init() {
 		nIntensity: 0.4
 	}
 
-	dat.GUI.TEXT_CLOSED = '^';
-  	dat.GUI.TEXT_OPEN = '&#9881;'; // gear
-
-  	/*
-	gui = new dat.GUI();
-
-	var f1 = gui.addFolder('Bad TV');
-	f1.add(badTVParams, 'show').onChange(onToggleShaders);
-	f1.add(badTVParams, 'distortion', 0.1, 20).step(0.1).listen().name("Thick Distort").onChange(onParamsChange);
-	f1.add(badTVParams, 'distortion2', 0.1, 20).step(0.1).listen().name("Fine Distort").onChange(onParamsChange);
-	f1.add(badTVParams, 'speed', 0.0,1.0).step(0.01).listen().name("Distort Speed").onChange(onParamsChange);
-	f1.add(badTVParams, 'rollSpeed', 0.0,1.0).step(0.01).listen().name("Roll Speed").onChange(onParamsChange);
-	
-	f1.open();
-
-	var f2 = gui.addFolder('RGB Shift');
-	f2.add(rgbParams, 'show').onChange(onToggleShaders);
-	f2.add(rgbParams, 'amount', 0.0, 0.1).listen().onChange(onParamsChange);
-	f2.add(rgbParams, 'angle', 0.0, 2.0).listen().onChange(onParamsChange);
-	f2.open();
-
-	var f4 = gui.addFolder('Static');
-	f4.add(staticParams, 'show').onChange(onToggleShaders);
-	f4.add(staticParams, 'amount', 0.0,1.0).step(0.01).listen().onChange(onParamsChange);
-	f4.add(staticParams, 'size2', 1.0,100.0).step(1.0).onChange(onParamsChange);
-	f4.open();
-
-	var f3 = gui.addFolder('Scanlines');
-	f3.add(filmParams, 'show').onChange(onToggleShaders);
-	f3.add(filmParams, 'count', 50, 1000).onChange(onParamsChange);
-	f3.add(filmParams, 'sIntensity', 0.0, 2.0).step(0.1).onChange(onParamsChange);
-	f3.add(filmParams, 'nIntensity', 0.0, 2.0).step(0.1).onChange(onParamsChange);
-	f3.open();
-
-	gui.close();
-	*/
-
 	onToggleShaders();
 	onParamsChange();
 
