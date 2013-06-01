@@ -17,8 +17,6 @@ var pnoise, globalParams;
 
 var stats;
 
-var pulser;
-
 init();
 animate();
 
@@ -182,7 +180,6 @@ function init() {
 
 
 	// sound	
-	pulser = new Pulser();
 	SC.initialize({
 		client_id: '129e27ca54a024eb97414a86f9fd0b97'
 	});
@@ -191,7 +188,6 @@ function init() {
 		useEQData:true
 	};
 	options.whileplaying = function(){
-		// pulser.refresh(this.eqData);
 		// get value of beat
 		var highNote = 0;
 		this.eqData.right.slice(205, 255).forEach(function(v){
@@ -309,8 +305,6 @@ function onToggleShaders(){
 }
 
 function animate() {
-	//hitTv(!pulser.pulse());
-
 	shaderTime += 0.1;
 	badTVPass.uniforms[ 'time' ].value =  shaderTime;
 	filmPass.uniforms[ 'time' ].value =  shaderTime;
