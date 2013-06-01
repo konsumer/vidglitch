@@ -9,61 +9,9 @@
 	<body>
 		<div id="info">f0rkb0mb</div>
 		<div id="container"></div>
-		<canvas id="cnv"></canvas>
 
 		<script src="assets/js/three.min.js"></script>
-		<script src="assets/js/postprocessing/EffectComposer.js"></script>
-		<script src="assets/js/postprocessing/RenderPass.js"></script>
-		<script src="assets/js/postprocessing/ShaderPass.js"></script>
-		<script src="assets/js/postprocessing/MaskPass.js"></script> 
-		<script src="assets/js/CopyShader.js"></script>
-		<script src="assets/js/ImprovedNoise.js"></script>
-		<script src="assets/js/FilmShader.js"></script>
-
-		<script src="assets/js/BadTVShader.js"></script>
-		<script src="assets/js/RGBShiftShader.js"></script>
-		<script src="assets/js/StaticShader.js"></script>
-
 		<script src="http://connect.soundcloud.com/sdk.js"></script>
-
-		<script>
-			var cnv = document.getElementById('cnv');
-			var ctx = cnv.getContext('2d');
-			cnv.height = document.height;
-			cnv.width = document.width;
-			var eq = [0,0,0,0,0,0,0,0];
-
-			// build eq
-			
-			// get sound, process on eq data, update shader
-			SC.initialize({
-				client_id: '129e27ca54a024eb97414a86f9fd0b97'
-			});
-			var options = {
-				useHighPerformance : true,
-				useEQData:true
-			};
-			options.whileplaying = function(){
-				// split EQ into 8 vals
-				eq = [0,0,0,0,0,0,0,0];
-				this.eqData.left.forEach(function(v,i){
-					eq[Math.floor(i/32)] += parseFloat(v);
-				});
-				for(i=0;i<8;i++){
-					eq[i] = eq[i] / 32;
-				}
-			};
-
-			function animate() {
-				console.log(eq)
-
-				requestAnimationFrame( animate );
-			}
-			animate();
-
-			SC.stream("/tracks/53193208", options, function(sound){
-			  sound.play();
-			});	
-		</script>
+		<script src="assets/js/eq.js"></script>
 	</body>
 </html>
