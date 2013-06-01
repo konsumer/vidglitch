@@ -2,6 +2,7 @@ body {
 	background-color: #000;
 	margin: 0px;
 	overflow: hidden;
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
 #info {
@@ -9,7 +10,6 @@ body {
 	position: absolute;
 	bottom: 20px;
 	padding: 5px 20px;
-	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
 	font-weight: 100;
 	font-size: 18px;
 	background-color: #000;
@@ -30,4 +30,18 @@ a{
 	right: 10px;
 	width: 100px;
 	height:60px;
+}
+
+#links {
+	position:absolute;
+	top: 10px;
+	right: 10px;
+	background: black;
+	padding: 10px;
+	display:inline;
+	list-style:none;
+}
+
+links a {
+	text-decoration:none;
 }
