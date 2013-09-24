@@ -26,16 +26,24 @@ var VidLayers = function(video){
 	this.addLayer();
 };
 
+// get file, or script inner-text by ID
 VidLayers.prototype.get = function(url, cb){
 	cb = cb || function(){};
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", url, true);
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4) {
-			cb(xhr.responseText);
-		}
-	};
-	xhr.send();
+	
+	var d = document.getElementById(url);
+	console.log(url, d);
+	if (d && d.innerHTML){
+		cb(d.innerHTML);
+	}else{
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+				cb(xhr.responseText);
+			}
+		};
+		xhr.send();
+	}
 };
 
 VidLayers.prototype.getShader = function(vshader, fshader, uniforms, cb){
