@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>VidGlitch</title>
+		<style>
+
+		body {
+			background-color: #000;
+			margin: 0px;
+			overflow: hidden;
+			font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+		}
+
+		#vid {
+			position:absolute;
+			bottom:10px;
+			right: 10px;
+			width: 100px;
+			height:60px;
+			display:none;
+		}
+
+		body:hover #vid{
+			display:inline-block;
+		}
+
+		#tunes {
+			position:absolute;
+			top: 10px;
+			left: 10px;
+			color: #fff;
+			background: rgba(0,0,0,0.5);
+			padding: 10px;
+			text-decoration:none;
+		}
+
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+
+		<a href="https://soundcloud.com/turborecordings/01-momplays-2" id="tunes">music</a>
+		<video id="vid" src="assets/space.mp4" autoplay loop />
+
+		<script src="assets/js/three.min.js"></script>
+		<script src="assets/js/postprocessing/EffectComposer.js"></script>
+		<script src="assets/js/postprocessing/RenderPass.js"></script>
+		<script src="assets/js/postprocessing/ShaderPass.js"></script>
+		<script src="assets/js/postprocessing/MaskPass.js"></script>
+		<script src="assets/js/CopyShader.js"></script>
+
+		<script src="assets/js/vidlayers.js"></script>
+		<script src="http://connect.soundcloud.com/sdk.js"></script>
+		<script>
+			(function(root){
+				// load vid-layers, append to doc
+				var vid = new VidLayers(document.getElementById("vid"));
+				document.getElementsByTagName('body')[0].appendChild(vid.domElement);
+
+				// init 2 channel 32 band EQ
+				var eq = [
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+					[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+				];
+				
+
+				
+				// add TV shader
+				vid.addLayer('tv', 'assets/shaders/basic.vs', '/assets/shaders/tv-bass.fs', {
+					'time': { 'type': 'f', 'value': 0.0 },
+					'eqL': { 'type': 'fv1', 'value': eq[0] },
+					'eqR': { 'type': 'fv1', 'value': eq[1] },
+					'speed': { 'type': 'f', 'value': 0.5 }
+				});
+
+				// add RGB shift shader
+				vid.addLayer('rgb', '/assets/shaders/basic.vs', '/assets/shaders/rgb-bass.fs', {
+					'eqL': { 'type': 'fv1', 'value': eq[0] },
+					'eqR': { 'type': 'fv1', 'value': eq[1] }
+				});
+
+				// add film shader
+				vid.addLayer('film', '/assets/shaders/basic.vs', '/assets/shaders/film.fs', {
+					'time': { 'type': 'f', 'value': 0.0 },
+					"nIntensity": { type: "f", value: 0.1 },
+					"sIntensity": { type: "f", value: 0.1 },
+					"sCount":     { type: "f", value: 0.1 },
+					"grayscale":  { type: "i", value: 1 }
+				});
+
+				
+				// add static shader
+				vid.addLayer('static', '/assets/shaders/basic.vs', '/assets/shaders/static-treble.fs', {
+					'time': { 'type': 'f', 'value': 0.0 },
+					'eqL': { 'type': 'fv1', 'value': eq[0] },
+					'eqR': { 'type': 'fv1', 'value': eq[1] }
+				});
+			
+				/*
+				// add EQ shader
+				vid.addLayer('eq', 'assets/shaders/basic.vs', '/assets/shaders/eq.fs', {
+					'eqL': { 'type': 'fv1', 'value': eq[0] },
+					'eqR': { 'type': 'fv1', 'value': eq[1] }
+				});
+				*/
+				
+
+				// handle window resize
+				function onResize() {
+					vid.renderer.setSize(root.innerWidth, root.innerHeight);
+					vid.camera.aspect = root.innerWidth / root.innerHeight;
+					vid.camera.updateProjectionMatrix();
+				}
+				root.onresize = onResize;
+				onResize();
+
+
+				// get sound, process on eq data, update shader
+				var scid='129e27ca54a024eb97414a86f9fd0b97';
+				SC.initialize({client_id: scid});
+				var options = {
+					useHighPerformance : true,
+					useEQData:true
+				};
+				options.whileplaying = function(){
+					eq = [
+						this.eqData.left.map(function(i){ return parseFloat(i); }),
+						this.eqData.right.map(function(i){ return parseFloat(i); })
+					];
+				};
+
+				vid.get('http://api.soundcloud.com/resolve.json?url=' + document.getElementById('tunes').attributes.href.value + '&client_id=' + scid, function(data){
+					var info = JSON.parse(data);
+					SC.stream("/tracks/" + info.id, options, function(sound){
+						sound.play();
+					});
+				});
+
+				function animate() {
+					vid.update({
+						'tv':{ 'eqL': eq[0],'eqR': eq[1]},
+						'rgb':{ 'eqL': eq[0],'eqR': eq[1]},
+						'static':{ 'eqL': eq[0],'eqR': eq[1]},
+						'eq':{ 'eqL': eq[0],'eqR': eq[1]}
+					});
+					requestAnimationFrame( animate );
+				}
+				animate();
+			})(this);
+		</script>
+	</body>
+</html>

@@ -1,7 +1,17 @@
 # Glitchy Video
 
-See it in action [here](http://konsumer.github.io/vidglitch)
+Glitch video to soundcloud music EQ data
 
-Click on video to fullscreen.
+[![Build Status](https://travis-ci.org/konsumer/vidglitch.png?branch=master)](https://travis-ci.org/konsumer/vidglitch)
 
-Music is [Invisible Friends](https://soundcloud.com/dosputin/invisible-friends) from [dosputin](https://soundcloud.com/dosputin).
+## Installation
+
+* Install dependencies for web-server with `npm install`
+* Start a local webserver with `npm start`
+
+
+## Usage
+
+* Change music link to change soundcloud song.
+* Change video tag to to change video.
+* Hover to see original video in lower-right corner.

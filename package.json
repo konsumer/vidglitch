@@ -1,0 +1,17 @@
+{
+  "name": "vidglitch",
+  "version": "0.0.1",
+  "description": "Glitch video to soundcloud music EQ data",
+  "main": "index.js",
+  "scripts": {
+    "start": "grunt server"
+  },
+  "repository": "https://github.com/konsumer/vidglitch",
+  "author": "David Konsumer <konsumer@jetboystudio.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-connect": "~0.5.0"
+  }
+}
