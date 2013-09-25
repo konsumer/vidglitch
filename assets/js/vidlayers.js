@@ -31,7 +31,6 @@ VidLayers.prototype.get = function(url, cb){
 	cb = cb || function(){};
 	
 	var d = document.getElementById(url);
-	console.log(url, d);
 	if (d && d.innerHTML){
 		cb(d.innerHTML);
 	}else{
