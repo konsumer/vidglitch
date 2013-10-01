@@ -43,188 +43,6 @@
 		<a href="https://soundcloud.com/turborecordings/01-momplays-2" id="tunes">music</a>
 		<video id="vid" src="assets/space.mp4" autoplay loop />
 
-<!-- inlined shaders, so it works better on github -->
-<script type="x-shader/x-vector" id="/assets/shaders/basic.vs">
-	varying vec2 vUv;
-	void main() {
-		vUv = uv;
-		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="/assets/shaders/tv-bass.fs">
-	uniform sampler2D tDiffuse;
-	uniform float time; // steadily increasing float passed in
-	uniform float eqL[32]; // EQ left
-	uniform float eqR[32]; // EQ right
-	uniform float speed; // distortion vertical travel speed
-
-	varying vec2 vUv;
-
-	vec3 mod289(vec3 x) {
-	  return x - floor(x * (1.0 / 289.0)) * 289.0;
-	}
-
-	vec2 mod289(vec2 x) {
-	  return x - floor(x * (1.0 / 289.0)) * 289.0;
-	}
-
-	vec3 permute(vec3 x) {
-	  return mod289(((x*34.0)+1.0)*x);
-	}
-
-	float snoise(vec2 v){
-	  const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
-	    0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
-	    -0.577350269189626,  // -1.0 + 2.0 * C.x
-	    0.024390243902439); // 1.0 / 41.0
-	  vec2 i  = floor(v + dot(v, C.yy) );
-	  vec2 x0 = v -   i + dot(i, C.xx);
-	  vec2 i1;
-	  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-	  vec4 x12 = x0.xyxy + C.xxzz;
-	  x12.xy -= i1;
-	  i = mod289(i); // Avoid truncation effects in permutation
-	  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-	  + i.x + vec3(0.0, i1.x, 1.0 ));
-	  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-	  m = m*m ;
-	  m = m*m ;
-	  vec3 x = 2.0 * fract(p * C.www) - 1.0;
-	  vec3 h = abs(x) - 0.5;
-	  vec3 ox = floor(x + 0.5);
-	  vec3 a0 = x - ox;
-	  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-	  vec3 g;
-	  g.x  = a0.x  * x0.x  + h.x  * x0.y;
-	  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-	  return 130.0 * dot(m, g);
-	}
-
-	void main() {
-	  vec2 p = vUv;
-
-	  // EQ to param-mapping goes here
-
-	  // amount of thick distortion
-	  float distortion = eqL[0] + eqL[1] + eqL[2] + eqR[0] + eqR[1] + eqR[2];
-
-	  // vertical roll speed
-	  float rollSpeed = (eqL[2] + eqL[3] + eqL[4] + eqR[2] + eqR[3] + eqR[4]) / 6.0;
-	  
-	  // amount of fine grain distortion
-	  float distortion2 = eqL[5] + eqL[6] + eqL[7] + eqR[5] + eqR[6] + eqR[7];
-	  
-
-	  float ty = time*speed;
-	  float yt = p.y - ty;
-	  float offset = snoise(vec2(yt*3.0,0.0))*0.2;
-	  offset = pow( offset*distortion,3.0)/distortion;
-	  offset += snoise(vec2(yt*50.0,0.0))*distortion2*0.001;
-	  gl_FragColor = texture2D(tDiffuse,  vec2(fract(p.x + offset),fract(p.y-time*rollSpeed) ));
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="/assets/shaders/rgb-bass.fs">
-	uniform sampler2D tDiffuse;
-	varying vec2 vUv;
-
-	uniform float eqL[32]; // EQ left
-	uniform float eqR[32]; // EQ right
-
-	#define M_PI 3.1415926535897932384626433832795
-
-
-	void main() {
-	  // EQ to param-mapping goes here
-	  float amount = eqL[2] + eqL[3] + eqL[4] + eqR[2] + eqR[3] + eqR[4]; // shift distance (1 is width of input)
-	  float angle = eqL[5] + eqL[6] + eqL[7] + eqR[5] + eqR[6] + eqR[7] * M_PI; // shift angle in radians
-	  
-	  vec2 offset = amount * vec2( cos(angle), sin(angle));
-	  vec4 cr = texture2D(tDiffuse, vUv + offset);
-	  vec4 cga = texture2D(tDiffuse, vUv);
-	  vec4 cb = texture2D(tDiffuse, vUv - offset);
-	  gl_FragColor = vec4(cr.r, cga.g, cb.b, cga.a);
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="/assets/shaders/film.fs">
-	uniform float time;
-	uniform bool grayscale;
-	uniform float nIntensity;
-	uniform float sIntensity;
-	uniform float sCount;
-	uniform sampler2D tDiffuse;
-	varying vec2 vUv;
-
-	float rand(vec2 co){
-		return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-	}
-
-	void main() {
-		vec4 cTextureScreen = texture2D( tDiffuse, vUv );
-		vec3 cResult = cTextureScreen.rgb;
-		vec2 sc = vec2( sin( vUv.y * sCount ), cos( vUv.y * sCount ) );
-		cResult += cTextureScreen.rgb * vec3( sc.x, sc.y, sc.x ) * sIntensity;
-		cResult = cTextureScreen.rgb + clamp( nIntensity, 0.0,1.0 ) * ( cResult - cTextureScreen.rgb );
-		gl_FragColor =  vec4( cResult, cTextureScreen.a );
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="/assets/shaders/static-treble.fs">
-	uniform sampler2D tDiffuse;
-	uniform float eqL[32]; // EQ left
-	uniform float eqR[32]; // EQ right
-	uniform float time;
-
-	varying vec2 vUv;
-
-	float rand(vec2 co){
-		return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-	}
-
-	void main() {
-		// EQ to param-mapping goes here
-		float amount =  (eqL[2] + eqL[3] + eqL[4] + eqR[2] + eqR[3] + eqR[4]) / 4.0;
-		float size =  ((eqL[24] + eqL[25] + eqL[26] + eqL[27] + eqL[28] + eqL[29] + eqL[30] + eqL[31] + eqR[24] + eqR[25] + eqR[26] + eqR[27] + eqR[28] + eqR[29] + eqR[30] + eqR[31])/8.0) * 0.1;
-
-		vec2 p = vUv;
-		vec4 color = texture2D(tDiffuse, p);
-		float xs = floor(gl_FragCoord.x / size);
-		float ys = floor(gl_FragCoord.y / size);
-		vec4 snow = vec4(rand(vec2(xs * time,ys * time))*amount);
-		gl_FragColor = color+ snow;
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="/assets/shaders/eq.fs">
-	uniform sampler2D tDiffuse;
-	uniform float eqL[32]; // EQ left
-	uniform float eqR[32]; // EQ right
-
-	varying vec2 vUv;
-	const float increment = 1.0/32.0;
-
-	void main() {
-		vec2 p = vUv;
-		vec4 pixel = texture2D(tDiffuse, vUv);
-		float loc = 0.0;
-		float loc2 = increment;
-
-		for (int i=0;i<32;i++){
-			if (p.x > loc && p.x < loc2) {
-				if(p.y < eqL[i]){
-					gl_FragColor = vec4(0.0, 1.0, 0.0, 0.2) + pixel;
-				}else{
-					gl_FragColor = pixel;
-				}
-			}
-			loc = loc + increment;
-			loc2 = loc + increment;
-		}
-	}
-</script>
-
 		<script src="assets/js/three.min.js"></script>
 		<script src="assets/js/postprocessing/EffectComposer.js"></script>
 		<script src="assets/js/postprocessing/RenderPass.js"></script>
@@ -249,7 +67,7 @@
 
 				
 				// add TV shader
-				vid.addLayer('tv', '/assets/shaders/basic.vs', '/assets/shaders/tv-bass.fs', {
+				vid.addLayer('tv', 'assets/shaders/basic.vs', 'assets/shaders/tv-bass.fs', {
 					'time': { 'type': 'f', 'value': 0.0 },
 					'eqL': { 'type': 'fv1', 'value': eq[0] },
 					'eqR': { 'type': 'fv1', 'value': eq[1] },
@@ -257,13 +75,13 @@
 				});
 
 				// add RGB shift shader
-				vid.addLayer('rgb', '/assets/shaders/basic.vs', '/assets/shaders/rgb-bass.fs', {
+				vid.addLayer('rgb', 'assets/shaders/basic.vs', 'assets/shaders/rgb-bass.fs', {
 					'eqL': { 'type': 'fv1', 'value': eq[0] },
 					'eqR': { 'type': 'fv1', 'value': eq[1] }
 				});
 
 				// add film shader
-				vid.addLayer('film', '/assets/shaders/basic.vs', '/assets/shaders/film.fs', {
+				vid.addLayer('film', 'assets/shaders/basic.vs', 'assets/shaders/film.fs', {
 					'time': { 'type': 'f', 'value': 0.0 },
 					"nIntensity": { type: "f", value: 0.1 },
 					"sIntensity": { type: "f", value: 0.1 },
@@ -273,7 +91,7 @@
 
 				
 				// add static shader
-				vid.addLayer('static', '/assets/shaders/basic.vs', '/assets/shaders/static-treble.fs', {
+				vid.addLayer('static', 'assets/shaders/basic.vs', 'assets/shaders/static-treble.fs', {
 					'time': { 'type': 'f', 'value': 0.0 },
 					'eqL': { 'type': 'fv1', 'value': eq[0] },
 					'eqR': { 'type': 'fv1', 'value': eq[1] }
@@ -281,7 +99,7 @@
 			
 				/*
 				// add EQ shader
-				vid.addLayer('eq', 'assets/shaders/basic.vs', '/assets/shaders/eq.fs', {
+				vid.addLayer('eq', 'assets/shaders/basic.vs', 'assets/shaders/eq.fs', {
 					'eqL': { 'type': 'fv1', 'value': eq[0] },
 					'eqR': { 'type': 'fv1', 'value': eq[1] }
 				});
