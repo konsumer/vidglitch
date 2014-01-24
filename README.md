@@ -2,8 +2,6 @@
 
 Glitch video to soundcloud music EQ data
 
-[![Build Status](https://travis-ci.org/konsumer/vidglitch.png?branch=master)](https://travis-ci.org/konsumer/vidglitch)
-
 ## Demo
 
 You can see it in action, [here](http://konsumer.github.io/vidglitch)
