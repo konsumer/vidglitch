@@ -4,9 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Vid Glitch</title>
+    <script>
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    </script>
   </head>
-  <body>
+  <body class='bg-white dark:bg-gray-900 dark:text-white'>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
