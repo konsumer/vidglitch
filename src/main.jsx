@@ -65,7 +65,7 @@ function App () {
           e[1].map(i => Math.random())
         ]
       })
-    }, 100)
+    }, 500)
     return () => clearInterval(i)
   }, [])
 
