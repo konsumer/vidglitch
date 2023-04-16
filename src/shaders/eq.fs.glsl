@@ -1,4 +1,4 @@
-uniform sampler2D tDiffuse;
+uniform sampler2D video;
 uniform float eqL[32]; // EQ left
 uniform float eqR[32]; // EQ right
 
@@ -7,7 +7,7 @@ const float increment = 1.0/32.0;
 
 void main() {
 	vec2 p = vUv;
-	vec4 pixel = texture2D(tDiffuse, vUv);
+	vec4 pixel = texture2D(video, vUv);
 	float loc = 0.0;
 	float loc2 = increment;
 

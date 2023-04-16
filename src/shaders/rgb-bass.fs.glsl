@@ -1,4 +1,4 @@
-uniform sampler2D tDiffuse;
+uniform sampler2D video;
 varying vec2 vUv;
 
 uniform float eqL[32]; // EQ left
@@ -13,8 +13,8 @@ void main() {
   float angle = eqL[5] + eqL[6] + eqL[7] + eqR[5] + eqR[6] + eqR[7] * M_PI; // shift angle in radians
   
   vec2 offset = amount * vec2( cos(angle), sin(angle));
-  vec4 cr = texture2D(tDiffuse, vUv + offset);
-  vec4 cga = texture2D(tDiffuse, vUv);
-  vec4 cb = texture2D(tDiffuse, vUv - offset);
+  vec4 cr = texture2D(video, vUv + offset);
+  vec4 cga = texture2D(video, vUv);
+  vec4 cb = texture2D(video, vUv - offset);
   gl_FragColor = vec4(cr.r, cga.g, cb.b, cga.a);
 }

@@ -1,4 +1,4 @@
-uniform sampler2D tDiffuse;
+uniform sampler2D video;
 uniform float eqL[32]; // EQ left
 uniform float eqR[32]; // EQ right
 uniform float time;
@@ -15,7 +15,7 @@ void main() {
 	float size =  ((eqL[24] + eqL[25] + eqL[26] + eqL[27] + eqL[28] + eqL[29] + eqL[30] + eqL[31] + eqR[24] + eqR[25] + eqR[26] + eqR[27] + eqR[28] + eqR[29] + eqR[30] + eqR[31])/8.0) * 0.1;
 
 	vec2 p = vUv;
-	vec4 color = texture2D(tDiffuse, p);
+	vec4 color = texture2D(video, p);
 	float xs = floor(gl_FragCoord.x / size);
 	float ys = floor(gl_FragCoord.y / size);
 	vec4 snow = vec4(rand(vec2(xs * time,ys * time))*amount);

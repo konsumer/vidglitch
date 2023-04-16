@@ -3,7 +3,7 @@ uniform bool grayscale;
 uniform float nIntensity;
 uniform float sIntensity;
 uniform float sCount;
-uniform sampler2D tDiffuse;
+uniform sampler2D video;
 varying vec2 vUv;
 
 float rand(vec2 co){
@@ -11,7 +11,7 @@ float rand(vec2 co){
 }
 
 void main() {
-	vec4 cTextureScreen = texture2D( tDiffuse, vUv );
+	vec4 cTextureScreen = texture2D( video, vUv );
 	vec3 cResult = cTextureScreen.rgb;
 	vec2 sc = vec2( sin( vUv.y * sCount ), cos( vUv.y * sCount ) );
 	cResult += cTextureScreen.rgb * vec3( sc.x, sc.y, sc.x ) * sIntensity;
